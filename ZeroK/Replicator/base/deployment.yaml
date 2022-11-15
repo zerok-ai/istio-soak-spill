@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"service3"},"name":"service3-deployment","namespace":"default"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"service3"}},"template":{"metadata":{"labels":{"app":"service3"}},"spec":{"containers":[{"env":[{"name":"NAME","value":"service3"},{"name":"TARGETS","value":"service4.default.svc.cluster.local"},{"name":"LATENCY_MIN","value":"0"},{"name":"LATENCY_MAX","value":"1"}],"image":"shivamnagar/echo-relay:latest","imagePullPolicy":"IfNotPresent","name":"service","ports":[{"containerPort":80}],"resources":{"limits":{"cpu":"2","memory":"1Gi"},"requests":{"cpu":"10m","memory":"40Mi"}}}]}}}}
+  creationTimestamp: "2022-10-18T18:01:42Z"
+  generation: 1
+  labels:
+    app: service3
+  name: service3-deployment
+  namespace: default
+  resourceVersion: "4198"
+  uid: b2efced8-7568-4039-b316-7fa1217df214
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: service3
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: service3
+    spec:
+      containers:
+      - env:
+        - name: NAME
+          value: service3
+        - name: TARGETS
+          value: service4.default.svc.cluster.local
+        - name: LATENCY_MIN
+          value: "0"
+        - name: LATENCY_MAX
+          value: "1"
+        image: shivamnagar/echo-relay:latest
+        imagePullPolicy: IfNotPresent
+        name: service
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            memory: 1Gi
+          requests:
+            cpu: 10m
+            memory: 40Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2022-10-18T18:01:42Z"
+    lastUpdateTime: "2022-10-18T18:02:31Z"
+    message: ReplicaSet "service3-deployment-cfffc5754" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2022-10-18T18:15:53Z"
+    lastUpdateTime: "2022-10-18T18:15:53Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

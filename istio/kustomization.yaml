@@ -1,0 +1,6 @@
+resources:
+- services.yaml
+- logging.yaml
+- soak.yaml
+- spill.yaml
+- telemetry_logs.yaml

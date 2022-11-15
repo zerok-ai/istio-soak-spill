@@ -1,0 +1,6 @@
+[submodule "EchoRelayApp"]
+	path = EchoRelayApp
+	url = ./EchoRelayApp
+[submodule "SampleApp"]
+	path = SampleApp
+	url = ./SampleApp

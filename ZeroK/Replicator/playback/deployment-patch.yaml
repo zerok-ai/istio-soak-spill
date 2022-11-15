@@ -1,0 +1,51 @@
+- op: remove
+  path: /status
+  value: 1
+- op: replace
+  path: /metadata/name
+  value: zerok-target
+- op: replace
+  path: /spec/replicas
+  value: 1
+
+- op: remove
+  path: /spec/template/metadata/labels
+  value: 1
+- op: add
+  path: /spec/template/metadata/labels
+  value: {}
+- op: add
+  path: /spec/template/metadata/labels/owner
+  value: zerok
+- op: add
+  path: /spec/template/metadata/labels/type
+  value: playback
+
+- op: remove
+  path: /spec/selector/matchLabels
+  value: 1
+- op: add
+  path: /spec/selector/matchLabels
+  value: {}
+- op: add
+  path: /spec/selector/matchLabels/owner
+  value: zerok
+- op: add
+  path: /spec/selector/matchLabels/type
+  value: playback
+
+- op: remove
+  path: /spec/template/spec/containers/0/env
+  value: 1
+- op: add
+  path: /spec/template/spec/containers/0/env
+  value: 
+    - name: NAME
+      value: service3 
+    - name: TARGETS 
+      value: zerok-mockserver.zerok.svc.cluster.local 
+    - name: LATENCY_MIN 
+      value: "0"
+    - name: LATENCY_MAX 
+      value: "1"
+

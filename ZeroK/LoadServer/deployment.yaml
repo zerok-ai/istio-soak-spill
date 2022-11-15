@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadserver-deployment
+  namespace: zerok
+  labels:
+    app: loadserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadserver
+  template:
+    metadata:
+      labels:
+        app: loadserver
+    spec:
+      containers:
+      - name: curl
+        image:  alpine/curl
+        # Just spin & wait forever
+        command: [ "sh", "-c", "--" ]
+        args: [ "while true; do sleep 1; curl http://zerok-target.default.svc.cluster.local/; done;" ]
+        resources: 
+          limits:
+            cpu: "2"
+            memory: 1Gi
+          requests:
+            cpu: 10m
+            memory: 40Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zerok-loadserver
+  namespace: zerok
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: loadserver
+  type: ClusterIP

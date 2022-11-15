@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"service3","namespace":"default"},"spec":{"ports":[{"port":80,"protocol":"TCP"}],"selector":{"app":"service3"},"sessionAffinity":"None","type":"ClusterIP"},"status":{"loadBalancer":{}}}
+  creationTimestamp: "2022-10-18T18:01:42Z"
+  name: service3
+  namespace: default
+  resourceVersion: "3392"
+  uid: 6b2d4167-ecdd-46e9-9680-b4c9dd291a80
+spec:
+  clusterIP: 10.43.222.71
+  clusterIPs:
+  - 10.43.222.71
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: service3
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

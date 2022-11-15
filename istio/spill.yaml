@@ -1,0 +1,96 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: zerok-spill
+  namespace: default
+spec:
+  workloadSelector:
+    labels:
+      owner: zerok
+      type: spill 
+  configPatches:
+    - applyTo: CLUSTER
+      patch:
+        operation: ADD
+        value:
+          name: soak_cluster
+          lb_policy: ROUND_ROBIN
+          connect_timeout: 0.5s
+          type: STRICT_DNS
+          load_assignment:
+            cluster_name: soak_cluster
+            endpoints: 
+              - lb_endpoints:
+                - endpoint: 
+                    address:
+                      socket_address: 
+                        address: 10.109.85.240           # soak-service
+                        port_value: 80
+              - lb_endpoints:
+                - endpoint: 
+                    address:
+                      socket_address: 
+                        address: 127.0.0.1              # local-service
+                        port_value: 80
+
+    - applyTo: CLUSTER
+      patch:
+        operation: ADD
+        value:
+          name: "backend_cluster"
+          connect_timeout: 5s
+          type: STRICT_DNS
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+            cluster_name: backend_cluster
+            endpoints: 
+              - lb_endpoints:
+                - endpoint: 
+                    address:
+                      socket_address: 
+                        address: 127.0.0.1
+                        port_value: 80
+
+    - applyTo: ROUTE_CONFIGURATION
+      match:
+        context: ANY
+      patch:
+        operation: MERGE
+        value:
+          response_headers_to_add: 
+            - append: true
+              append_action: APPEND_IF_EXISTS_OR_ADD
+              header:
+                key: ZEROK-TARGET
+                value: 'spill'          
+
+    - applyTo: HTTP_ROUTE
+      match:
+        context: SIDECAR_INBOUND
+      patch:
+        operation: MERGE
+        value:
+          route:
+            weighted_clusters:
+              total_weight: 100
+              clusters: 
+                - name: backend_cluster
+                  weight: 50
+                - name: soak_cluster
+                  weight: 50
+
+    - applyTo: HTTP_ROUTE
+      match:
+        context: SIDECAR_INBOUND
+      patch:
+        operation: MERGE
+        value:
+          route:
+            retry_policy: 
+              retry_on: "retriable-status-codes"
+              retriable_status_codes:
+                - 429
+              retry_host_predicate:
+                - name: envoy.retry_host_predicates.previous_hosts
+                  typed_config:
+                    "@type": "type.googleapis.com/envoy.extensions.retry.host.previous_hosts.v3.PreviousHostsPredicate"
